@@ -1,10 +1,11 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Caching.Memory;
 using OnlyShop.Adapters.Common;
 using OnlyShop.Application.Abstractions.Services;
 using OnlyShop.Application.Dtos;
+using System.Security.Claims;
 
 namespace OnlyShop.Adapters.Endpoints;
 
@@ -30,6 +31,15 @@ internal static class MiniAppEndpoints
 
         catalog.MapGet("/products/{id:guid}", (Guid id, ICatalogService service, CancellationToken ct) =>
             service.GetProductAsync(id, ct));
+
+        app.MapGet("/api/settings", (IMemoryCache cache) =>
+        {
+            return new
+            {
+                brandName = cache.Get<string>("brand_name") ?? "ONLYSHOP",
+                accentColor = cache.Get<string>("accent_color") ?? "#393CA7"
+            };
+        }).AllowAnonymous();
 
         var basket = api.MapGroup("/basket");
 

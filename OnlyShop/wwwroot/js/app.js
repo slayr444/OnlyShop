@@ -23,6 +23,24 @@
         const { nav } = useApp();
 
         useEffect(() => {
+            const baseUrl = window.APP_CONFIG.apiBase || "";
+            fetch(`${baseUrl}/api/settings`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.accentColor) {
+                        document.documentElement.style.setProperty('--brand', data.accentColor);
+                    }
+                    if (data.brandName) {
+                        setTimeout(() => {
+                            const wordmark = document.querySelector('.wordmark');
+                            if (wordmark) wordmark.innerText = data.brandName.toUpperCase();
+                        }, 50);
+                    }
+                })
+                .catch(e => console.log('Не удалось загрузить настройки', e));
+        }, []);
+
+        useEffect(() => {
             if (!tg || !tg.BackButton) return undefined;
             const handler = () => nav.closeProduct();
             if (nav.productId) {

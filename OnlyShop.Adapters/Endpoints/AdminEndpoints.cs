@@ -1,8 +1,8 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OnlyShop.Adapters.Common;
 using OnlyShop.Adapters.Options;
@@ -11,6 +11,7 @@ using OnlyShop.Application.Abstractions.Services;
 using OnlyShop.Application.Common.Models;
 using OnlyShop.Application.Dtos;
 using OnlyShop.Core.Common;
+using System.Security.Claims;
 
 
 namespace OnlyShop.Adapters.Endpoints;
@@ -42,6 +43,23 @@ internal static class AdminEndpoints
         {
             var product = await service.CreateAsync(user.GetId(), request, ct);
             return Results.Created($"/api/admin/products/{product.Id}", product);
+        });
+
+        var settings = admin.MapGroup("/settings");
+        settings.MapGet("/", (IMemoryCache cache) =>
+        {
+            return new
+            {
+                BrandName = cache.Get<string>("brand_name") ?? "ONLYSHOP",
+                AccentColor = cache.Get<string>("accent_color") ?? "#393CA7"
+            };
+        });
+
+        settings.MapPut("/", (UpdateSettingsReq req, IMemoryCache cache) =>
+        {
+            cache.Set("brand_name", req.BrandName);
+            cache.Set("accent_color", req.AccentColor);
+            return Results.NoContent();
         });
 
         products.MapPut("/{id:guid}", (ClaimsPrincipal user, Guid id, UpdateProductRequest request, IProductManagementService service, CancellationToken ct) =>
@@ -156,3 +174,5 @@ internal static class AdminEndpoints
         return new FileUpload(file.OpenReadStream(), file.FileName, file.ContentType);
     }
 }
+
+internal record UpdateSettingsReq(string BrandName, string AccentColor);
