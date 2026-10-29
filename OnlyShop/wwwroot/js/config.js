@@ -5,6 +5,7 @@ window.APP_CONFIG = {
     photoBase: '/media/',
     managerUsername: 'arabicaa666',
     botUsername: 'onlyshop00_bot',
+    baseCurrency: 'RUB', 
     usdRate: 3.2,
     maxBonusSpendPercent: 30,
     mock: false,

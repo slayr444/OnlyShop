@@ -165,8 +165,11 @@
         const checkout = useCallback(
             async (form) => {
                 const delivery = cfg.deliveryMethods.find((d) => d.id === form.delivery);
+
+                const checkoutCurrency = currency === 'USD' ? (cfg.baseCurrency || 'RUB') : currency;
+
                 const result = await api.checkout({
-                    currency: currency === 'RUB' ? 'Rub' : 'Byn',
+                    currency: checkoutCurrency === 'RUB' ? 'Rub' : 'Byn',
                     paymentMethod: form.payment,
                     deliveryMethod: form.delivery,
                     deliveryAddress: delivery.needsAddress ? form.address.trim() : null,

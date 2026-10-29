@@ -27,7 +27,7 @@ public class TelegramOrderNotifier(ITelegramBotClient bot) : IOrderNotifier
                     chatId: managerId,
                     text: text,
                     parseMode: ParseMode.Html,
-                    replyMarkup: keyboard,      
+                    replyMarkup: keyboard,
                     cancellationToken: ct);
             }
             catch
@@ -41,7 +41,7 @@ public class TelegramOrderNotifier(ITelegramBotClient bot) : IOrderNotifier
 
     private static InlineKeyboardMarkup BuildKeyboard(Guid orderId)
     {
-        var id = orderId.ToString("N");     
+        var id = orderId.ToString("N");
 
         return new InlineKeyboardMarkup(new[]
         {
@@ -90,7 +90,7 @@ public class TelegramOrderNotifier(ITelegramBotClient bot) : IOrderNotifier
 
         if (order.BonusesSpent > 0)
         {
-            sb.AppendLine($"🎁 <b>Списано бонусов:</b> {order.BonusesSpent}");
+            sb.AppendLine($"🎁 <b>Списано бонусов:</b> {order.BonusesSpent} {GetCurrencyText(order.Currency)}");
         }
         sb.AppendLine($"💳 <b>Итого к оплате:</b> {order.Total} {GetCurrencyText(order.Currency)}");
         sb.AppendLine();

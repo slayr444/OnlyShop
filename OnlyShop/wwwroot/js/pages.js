@@ -439,7 +439,10 @@
 
         const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
         const delivery = cfg.deliveryMethods.find((d) => d.id === form.delivery);
-        const orderCurrency = currency === 'RUB' ? 'RUB' : 'BYN';
+
+        const checkoutCurrency = currency === 'USD' ? (cfg.baseCurrency || 'RUB') : currency;
+
+        const orderCurrency = checkoutCurrency;
         const orderTotal = orderCurrency === 'RUB' ? basketTotals.rub : basketTotals.byn;
 
         const maxAllowedBonuses = orderTotal * ((cfg.maxBonusSpendPercent || 30) / 100);
@@ -511,7 +514,7 @@
           </div>
           <label className="field"><span>Комментарий</span><textarea rows="2" value=${form.comment} onInput=${set('comment')}></textarea></label>
           
-          <!-- ИСПРАВЛЕНО: Показываем реальное количество бонусов, которое применится -->
+          <!-- Показываем реальное количество бонусов, которое применится -->
           ${user && user.bonusBalance > 0 &&
                 html`<label className="check">
             <input type="checkbox" checked=${form.useBonuses} onChange=${(e) => setForm((f) => ({ ...f, useBonuses: e.target.checked }))} />
@@ -522,7 +525,9 @@
           <div className="summary-row"><span>Товары</span><span>${money.format(orderTotal, orderCurrency)}</span></div>
           ${bonuses > 0 && html`<div className="summary-row"><span>Бонусы</span><span>−${money.format(bonuses, orderCurrency)}</span></div>`}
           <div className="summary-row total"><span>Итого</span><span>${money.format(payable, orderCurrency)}</span></div>
-          ${currency === 'USD' && html`<small className="muted">Заказ оформляется в белорусских рублях. В долларах цены показаны для ориентира.</small>`}
+          
+          <!-- ИСПРАВЛЕНО: Понятное предупреждение о валюте оформления -->
+          ${currency === 'USD' && html`<small className="muted">Заказ оформляется в ${orderCurrency}. В долларах цены показаны для ориентира.</small>`}
         </div>
         <button className=${'cta glass-brand static' + (submitting ? ' is-disabled' : '')} disabled=${submitting} onClick=${submit}>
           <span>${submitting ? 'Оформляем…' : 'Оформить заказ'}</span><i></i><span>${money.format(payable, orderCurrency)}</span>
