@@ -47,7 +47,7 @@
       <header className="header">
         <button className="icon-btn" aria-label="Категории" onClick=${() => setOpen(true)}><${Icon} name="menu" size=${26} /></button>
         <div className="brand">
-          <div className="wordmark">ONLYSHOP</div>
+          <div className="wordmark">42,5</div>
         </div>
         <button className="icon-btn" aria-label="Поиск" onClick=${nav.focusSearch}><${Icon} name="search" size=${26} /></button>
       </header>
